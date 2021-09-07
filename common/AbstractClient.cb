@@ -1,0 +1,111 @@
+
+import ../utils/Sign
+
+class AbstractClient {
+
+    var mCredential;
+    var mApiUrl;
+    var mRegion;
+    var mApiVersion;
+    var mClientProfile;
+    var mPath;
+
+    function AbstractClient(apiUrl, version, credential, region, profile) {
+        mCredential = credential;
+        mApiUrl = apiUrl;
+        mApiVersion = version;
+        mClientProfile = profile;
+        mPath = "/";
+        mRegion = region;
+    }
+
+    // 公共参数
+    function formatRequestData(action, param) {
+        param.add("Action", action);
+        param.add("Nonce", STRING(getNonce(100000, 999999)));
+        param.add("Timestamp", STRING(time()));
+        param.add("Version", mApiVersion);
+
+        if (mCredential.getSecretId() && strlen(mCredential.getSecretId()) > 0) {
+            param.add("SecretId", mCredential.getSecretId());
+        }
+        
+        if (mRegion && strlen(mRegion) > 0) {
+            param.add("Region", mRegion);
+        }
+        
+        if (mClientProfile.getSignMethod() && strlen(mClientProfile.getSignMethod()) > 0) {
+            param.add("SignatureMethod", mClientProfile.getSignMethod());
+        }
+       
+        if (mCredential.getToken() && strlen(mCredential.getToken()) > 0) {
+            param.add("Token", mCredential.getToken());
+        }
+
+        if (mClientProfile.getLanguage()) {
+            param.add("Language", mClientProfile.getLanguage());
+        }
+
+        var signOutParam = makeSign(mCredential.getSecretKey(), param, mClientProfile.getReqMethod(), mApiUrl, mPath);
+        var strParam = "";
+
+        try {
+            foreach (k, v : param) {
+                strParam += (k + "=" + url_encode(v)+ "&");
+            }
+
+            strParam += ("Signature=" + url_encode(signOutParam));
+        } catch (error) {
+            print error;
+        }
+
+        return strParam;
+    }
+
+    function internalRequest(request, actionName) {
+        var params = new Map();
+        request.toMap(params, "");
+        
+        var strParam = formatRequestData(actionName, params);
+        var httpRequestUrl = "https://" + mApiUrl + mPath;
+
+        if (mClientProfile.getReqMethod() == "GET") {
+            httpRequestUrl += "?" + strParam;
+        } else {
+            print "暂不支持POST请求";
+            return;
+        }
+
+        var httpClientRequest = new HttpClientRequest();
+        httpClientRequest.setMethod(mClientProfile.getReqMethod());
+        httpClientRequest.setUrl(httpRequestUrl);
+
+        var httpClientResponse = httpClientRequest.flush();
+		var status = httpClientResponse.getStatus();
+        print status;
+
+		if(status != HTTP_OK)
+		{   
+            var msg = "response code is " + status + ", not 200";
+            print msg;
+            return;
+		}
+
+        var dataJson = new Json(httpClientResponse.getData());
+        var responseJson = dataJson.get("Response");
+        print dataJson.toJsonString();
+
+        var errJson = responseJson.get("Error");
+        if (errJson != null) {
+            var code = errJson.get("Code");
+            var message = errJson.get("Message");
+            print "错误原因:"+code+","+message;
+        }
+
+        return responseJson;
+    }
+
+    function getNonce(n, m) {
+        return UINT(Rand() * (m - n + 1) + n);
+    }
+}

@@ -1,0 +1,61 @@
+/**
+** 签名
+*/
+
+function makeSign(secretKey, requestParams, reqMethod, host, path) {
+  var retStr = "";
+  retStr += reqMethod;
+  retStr += host;
+  retStr += path;
+  retStr += buildParamStr(requestParams, reqMethod);
+
+  // 生成签名串
+	var signStr = base64_encode(openssl_hmac_sha1(secretKey, retStr));
+
+  print "signStr:"+signStr;
+  return signStr;
+}
+
+function buildParamStr(requestParams, requestMethod) {
+  var array = new Array();
+  foreach (k,v : requestParams) {
+    array.add(k);
+  }
+
+  sort(array);
+
+  var retStr = "";
+  foreach (k,v : array) {
+
+    var value = requestParams.get(v);
+    if (strlen(retStr) < 1) {
+      retStr += "?";
+    } else {
+      retStr += "&";
+    }
+    retStr += strreplace(v, "_", ".") + "=" + value;
+  }
+
+  return retStr;
+}
+
+// 字符排序
+function sort(array) 
+{
+    var len = array.size();
+
+    for (var i=len-1; i >0 ; i--)
+    {
+        for (var j=i-1; j >=0; j--) 
+        {
+            var a = stricmp(array[i], array[j]);
+            
+            if (a < 0)
+            {
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+    }
+}

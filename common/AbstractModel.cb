@@ -1,0 +1,27 @@
+
+class AbstractModel {
+
+    virtual function toMap(map, prefix);
+
+    function setParamToMap(map, key, value) {
+        if (value != null) {
+
+            key = strupper(strget(key, 0, 1)) + strget(key, 1);
+            key = strreplace(key, "_", ".");
+            map.add(key, "" + STRING(value));
+        }
+    }
+
+    function setParamArrayToMap(map, prefix, arr) {
+        if (CBType(arr) != "Array") {
+            print "arr is not an array type! ";
+            return;
+        }
+        
+        if (arr != null) {
+            for (var i = 0; i < arr.size(); i++) {
+                setParamToMap(map, prefix + i, arr[i]);
+            }
+        }
+    }
+} 

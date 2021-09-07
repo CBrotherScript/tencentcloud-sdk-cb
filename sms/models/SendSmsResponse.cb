@@ -1,0 +1,68 @@
+
+import ../../common/AbstractModel
+import ./SendStatus
+
+class SendSmsResponse extends AbstractModel {
+    /**
+    * 短信发送状态。
+    */
+    var mSendStatusSet;
+
+    /**
+    * 唯一请求 ID，每次请求都会返回。定位问题时需要提供该次请求的 RequestId。
+    */
+    var mRequestId;
+
+    
+    function SendSmsResponse(source) {
+        var sendStatusSet = source.get("SendStatusSet");
+        if (sendStatusSet != null) {
+            // 目前只存储第一个状态
+            var size = 1;//sendStatusSet.size();
+        
+            for (var i = 0; i < size; i++) {
+                mSendStatusSet = new SendStatus(sendStatusSet.get(i));
+            }
+        }
+
+        if (source.get("RequestId") != null) {
+            mRequestId = source.get("RequestId");
+        }
+    }
+
+    /**
+     * Get 短信发送状态。 
+     * @return SendStatusSet 短信发送状态。
+     */
+    function getSendStatusSet() {
+        return mSendStatusSet;
+    }
+
+    /**
+     * Set 短信发送状态。
+     * @param SendStatusSet 短信发送状态。
+     */
+    function setSendStatusSet(sendStatusSet) {
+        mSendStatusSet = sendStatusSet;
+    }
+
+    /**
+     * Get 唯一请求 ID，每次请求都会返回。。 
+     * @return RequestId 唯一请求 ID。
+     */
+    function getRequestId() {
+        return mRequestId;
+    }
+
+    /**
+     * Set 唯一请求 ID，每次请求都会返回。
+     * @param RequestId 唯一请求 ID，每次请求都会返回。
+     */
+    function setRequestId(requestId) {
+        mRequestId = requestId;
+    }
+
+    function toMap(map, prefix) {
+
+    }
+}

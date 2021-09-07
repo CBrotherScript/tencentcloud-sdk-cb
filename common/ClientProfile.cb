@@ -1,0 +1,54 @@
+
+class ClientProfile {
+
+    /** Signature process version 1, with HmacSHA1. */
+    var SIGN_SHA1 = "HmacSHA1";
+
+    /** Signature process version 1, with HmacSHA256. */
+    var SIGN_SHA256 = "HmacSHA256";
+
+    /** Signature process version 3. */
+    var SIGN_TC3_256 = "TC3-HMAC-SHA256";
+
+    var REQ_POST = "POST";
+
+    var REQ_GET = "GET";
+
+    var mSignMethod;
+    var mLanguage;
+
+    var mReqMethod;
+
+    function ClientProfile(signMethod) {
+        if (mSignMethod == null || strlen(mSignMethod) < 1) {
+            mSignMethod = SIGN_TC3_256;
+        }
+
+        mSignMethod = signMethod;
+        mReqMethod = REQ_POST;
+    }
+
+    function setSignMethod(signMethod) {
+        mSignMethod = signMethod;
+    }
+
+    function getSignMethod() {
+        return mSignMethod;
+    }
+
+    function getLanguage() {
+        return mLanguage;
+    }
+
+    function setLanguage(lang) {
+        mLanguage = lang;
+    }
+
+    function setReqMethod(reqMethod) {
+        mReqMethod = reqMethod;
+    }
+
+    function getReqMethod() {
+        return mReqMethod;
+    }
+}

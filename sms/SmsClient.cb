@@ -1,0 +1,31 @@
+import ../common/AbstractClient
+import ./models/SendSmsResponse
+
+class SmsClient extends AbstractClient {
+    
+    var apiUrl = "sms.tencentcloudapi.com";
+    var version = "2019-07-11";
+
+    function SmsClient(credential, region, profile) {
+        super(apiUrl, version, credential, region, profile);
+    }
+
+    /**
+     *短信发送接口，用户给用户发短信验证码、通知类短信或营销短信。
+     **/
+    function SendSms(request) {
+        var rspStr;
+        try
+        {   
+            rspStr = internalRequest(request, "SendSms");
+        }
+        catch (error)
+        {
+            print "err:"+error;
+        }
+
+        var response = new SendSmsResponse(rspStr);
+        return response;
+    }
+    
+}
