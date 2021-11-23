@@ -1,0 +1,55 @@
+import ./models/LoginResponse
+
+class LoginClient {
+    var apiUrl = "api.weixin.qq.com/sns/jscode2session";
+
+    function LoginClient() {
+    }
+
+    function Login(request) {
+        var rspStr;
+        try
+        {   
+            var params = new Map();
+            request.toMap(params, "");
+
+            var strParam = "";
+            foreach (k, v : params) {
+                strParam += (k + "=" + v+ "&");
+            }
+
+            var httpRequestUrl = "https://" + apiUrl + "?" + strParam;
+ 
+            var httpClientRequest = new HttpClientRequest();
+            httpClientRequest.setMethod("GET");
+            httpClientRequest.setUrl(httpRequestUrl);
+
+            var httpClientResponse = httpClientRequest.flush();
+            var status = httpClientResponse.getStatus();
+
+            if(status != HTTP_OK)
+            {   
+                var msg = "response code is " + status + ", not 200";
+                print msg;
+                return;
+            }
+
+            var dataJson = new Json(httpClientResponse.getData());
+            
+            var errCode = dataJson.get("errcode");
+            if (errCode != null) {
+                var message = dataJson.get("errmsg");
+                print "错误原因:"+errCode+","+message;
+            }
+
+            rspStr = dataJson;
+        }
+        catch (error)
+        {
+            print "err:"+error;
+        }
+
+        var response = new LoginResponse(rspStr);
+        return response;
+    }
+}

@@ -1,0 +1,197 @@
+
+import ../../common/AbstractModel
+import ../WXBizDataCrypt
+
+class LoginResponse extends AbstractModel {
+
+    // 用户唯一标识
+    var mOpenid;
+
+    // 微信登陆code
+    var mCode;
+
+    // 会话密钥
+    var mSessionKey;
+
+    // 用户在开放平台的唯一标识符，若当前小程序已绑定到微信开放平台帐号下会返回
+    var mUnionid;
+
+    // 用户绑定的手机号码（国外手机号会有区号）
+    var mPhoneNumber;
+
+    // 没有区号的手机号
+    var mPurePhoneNumber;
+
+    // 区号
+    var mCountryCode;
+
+    // 用户昵称
+    var mNickName;
+
+    // 用户头像url
+    var mAvatarUrl;
+
+    // 注册地址
+    var mAddress;
+
+    // 省份
+    var mProvince;
+
+    // 城市
+    var mCity;
+
+    // 区
+    var mDistrict;
+
+    // 经度
+    var mLongitude;
+
+    // 纬度
+    var mLatitude;
+
+    function LoginResponse(source) {
+        if (source.get("openid") != null) {
+            setOpenid(source.get("openid"));
+        }
+
+        if (source.get("session_key") != null) {
+            setSessionKey(source.get("session_key"));
+        }
+
+        if (source.get("unionid") != null) {
+            setUnionid(source.get("unionid"));
+        }
+    }
+
+    function setOpenid(openid) {
+        mOpenid = openid;
+    }
+
+    function setSessionKey(sessionKey) {
+        mSessionKey = sessionKey;
+    }
+    
+    function setUnionid(unionid) {
+        mUnionid = unionid;
+    }
+
+    function setNickName(nickName) {
+        mNickName = nickName;
+    }
+    
+    function setAvatarUrl(avatarUrl) {
+        mAvatarUrl = avatarUrl;
+    }
+
+    function setCode(code) {
+        mCode = code;
+    }
+
+    function setAddress(address) {
+        mAddress = address;
+    }
+
+    function setProvince(province) {
+        mProvince = province;
+    }
+
+    function setCity(city) {
+        mCity = city;
+    }
+
+    function setDistrict(district) {
+        mDistrict = district;
+    }
+    
+    function setLongitude(longitude) {
+        mLongitude = longitude;
+    }
+
+    function setLatitude(latitude) {
+        mLatitude = latitude;
+    }
+    
+    function getOpenid() {
+        return mOpenid;
+    }
+
+    function getUnionid() {
+        return mUnionid;
+    }
+
+    function getPhoneNumber() {
+        return mPhoneNumber;
+    }
+
+    function getNickName() {
+        return mNickName;
+    }
+    
+    function getAvatarUrl() {
+        return mAvatarUrl;
+    }
+
+    function getAddress() {
+        return mAddress;
+    }
+
+    function getProvince() {
+        return mProvince;
+    }
+
+    function getCity() {
+        return mCity;
+    }
+
+    function getDistrict() {
+        return mDistrict;
+    }
+    
+    function getLongitude() {
+        return mLongitude;
+    }
+
+    function getLatitude() {
+        return mLatitude;
+    }
+
+    function getCode(code) {
+        return mCode;
+    }
+
+    function getSessionKey() {
+        return mSessionKey;
+    }
+
+    // 解密微信用户信息
+    function parseUserData(appId, encryptedData, iv) {
+        var decipher = decryptData(appId, mSessionKey, iv, encryptedData);
+        if(decipher == null)
+		{
+            print "解密用户信息错误！";
+			return false;	
+		}
+
+        var userJson = new Json(decipher);
+        var phoneNumber = userJson.get("phoneNumber");
+        
+        if (userJson == null || phoneNumber == null) {
+            print "解析用户信息错误！";
+            return false;	
+        }
+
+        mPhoneNumber = phoneNumber;
+        mPurePhoneNumber = userJson.get("purePhoneNumber");
+        mCountryCode = userJson.get("countryCode");
+
+        return true;
+    }
+
+    function toMap(map, prefix) {
+        setParamToMap(map, prefix + "openid", mOpenid);
+        setParamToMap(map, prefix + "sessionKey", mSessionKey);
+        setParamToMap(map, prefix + "unionid", mUnionid);
+        setParamToMap(map, prefix + "phoneNumber", mPhoneNumber);
+    }
+
+}

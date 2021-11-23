@@ -1,0 +1,38 @@
+
+function decryptData(appId, sessionKey, iv, encryptedData)
+{
+	print appId;
+	print sessionKey;
+	print iv;
+	print encryptedData;
+	if(sessionKey == null || iv == null)
+	{
+		return null;
+	}	
+	
+	var aesKey = base64_decode(sessionKey);
+	var aesIV =  base64_decode(iv);	
+	var aesCipher = base64_decode(encryptedData);
+	
+	var data = openssl_decrypt_aes_128_cbc(aesCipher,aesKey,aesIV);
+	
+	var json = new Json(data);
+	var watermark = json.get("watermark");
+	if(watermark == null)
+	{
+		return null;
+	}
+	
+	var jsonappid = watermark.get("appid");
+	if(jsonappid == null)
+	{
+		return null;
+	}
+	
+	if(jsonappid != appId)
+	{
+		return null;
+	}
+	
+	return data;
+}

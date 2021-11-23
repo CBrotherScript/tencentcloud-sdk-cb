@@ -1,0 +1,51 @@
+
+import ../../common/AbstractModel
+
+class LoginRequest extends AbstractModel {
+
+    // 临时登录凭证code（有效期五分钟）
+    var mCode;
+
+    var mAppID;
+
+    var mAppSecret;
+    
+    // 包括敏感数据在内的完整用户信息的加密数据
+    var mEncryptedData;
+
+    // 加密算法的初始向量，详细见加密数据解密算法。
+    var mIv;
+
+    function setCode(code) {
+        mCode = code;
+    }
+
+    function setAppId(appId) {
+        mAppID = appId;
+    }
+
+    function setAppSecret(secret) {
+        mAppSecret = secret;
+    }
+
+    function setEncryptedData(encryptedData) {
+        mEncryptedData = encryptedData;
+    }
+
+    function setIv(iv) {
+        mIv = iv;
+    }
+
+    function setParamToMap(map, key, value) {
+        if (value != null) {
+            map.add(key, "" + STRING(value));
+        }
+    }
+    
+    function toMap(map, prefix) {
+        setParamToMap(map, prefix + "appid", mAppID);
+        setParamToMap(map, prefix + "secret", mAppSecret);
+        setParamToMap(map, prefix + "js_code", mCode);
+        setParamToMap(map, prefix + "grant_type", "authorization_code");
+    }
+}
