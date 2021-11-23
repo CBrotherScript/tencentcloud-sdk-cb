@@ -2,6 +2,8 @@ import ./common/Credential
 import ./common/ClientProfile
 import ./sms/models/SendSmsRequest
 import ./sms/SmsClient
+import ./login/LoginClient
+import ./login/models/LoginRequest
 
 /*可选项，暂不支持，后续扩展
 const BUCKET_NAME = "BUCKET_NAME";
@@ -56,4 +58,23 @@ function main() {
 
     // 也可以取出单个值，你可以通过官网接口文档或跳转到response对象的定义处查看返回字段的定义
     print res.getRequestId();
+}
+
+// 微信登录
+function LoginWx(code, encryptedData, iv) 
+{
+    var loginRequst = new LoginRequest();
+
+    loginRequst.setAppId(WX_APP_ID);
+    loginRequst.setAppSecret(WX_APP_SECRET);
+    loginRequst.setCode(code);
+    // loginRequst.setEncryptedData(encryptedData);
+    // loginRequst.setIv(iv);
+    
+    var client = new LoginClient();
+
+    var response = client.Login(loginRequst);
+    response.parseUserData(WX_APP_ID, encryptedData, iv);
+
+    return response;
 }
